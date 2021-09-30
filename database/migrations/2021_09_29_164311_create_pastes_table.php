@@ -17,6 +17,7 @@ class CreatePastesTable extends Migration
             $table->id();
             $table->string('title');
             $table->text('content');
+            $table->string('hash');
             $table->tinyInteger('access');
             $table->dateTime('expiration_time')->nullable();
             $table->timestamps();

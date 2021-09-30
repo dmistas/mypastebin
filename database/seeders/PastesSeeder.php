@@ -2,20 +2,18 @@
 
 namespace Database\Seeders;
 
+use App\Models\Paste;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class PastesSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Run the database seeds.
      *
      * @return void
      */
     public function run()
     {
-        $this->call([
-            PastesSeeder::class
-        ]);
-
+        Paste::factory()->count(20)->create();
     }
 }

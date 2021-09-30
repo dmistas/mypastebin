@@ -2,84 +2,57 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\PasteRequest;
 use App\Models\Paste;
-use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Str;
+use Illuminate\View\View;
 
 class PasteController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function index(): View
     {
-        //
+        $pastes = Paste::where('access', Paste::ACCESS_PUBLIC)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->whereDate('expiration_time', '>=', Carbon::now()->toDateString())
+                        ->whereTime('expiration_time', '>=', Carbon::now()->toTimeString());
+                })
+                    ->orWhere(function ($query) {
+                        $query->where('expiration_time', '=', null);
+                    });
+            })
+            ->latest()->limit(10)->get();
+        return view('pastes.index', compact('pastes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(PasteRequest $request, Paste $paste)
     {
-        //
+        $hash = Str::random(8);
+        $paste->fill($request->validated());
+        $paste->hash = $hash;
+        $paste->save();
+        return Redirect::route('show.paste', [$hash]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show(string $hash)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Paste  $paste
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Paste $paste)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Paste  $paste
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Paste $paste)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Paste  $paste
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Paste $paste)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Paste  $paste
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Paste $paste)
-    {
-        //
+        $paste = Paste::where('hash', $hash)
+            ->whereDate('expiration_time', '>=', Carbon::now()->toDateString())
+            ->whereTime('expiration_time', '>=', Carbon::now()->toTimeString())
+            ->firstOrFail();
+        $pastes = Paste::where('access', Paste::ACCESS_PUBLIC)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->whereDate('expiration_time', '>=', Carbon::now()->toDateString())
+                        ->whereTime('expiration_time', '>=', Carbon::now()->toTimeString());
+                })
+                    ->orWhere(function ($query) {
+                        $query->where('expiration_time', '=', null);
+                    });
+            })
+            ->latest()->limit(10)->get();
+        return view('pastes.show', compact('pastes', 'paste'));
     }
 }

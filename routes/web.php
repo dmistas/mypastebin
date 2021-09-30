@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PasteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,10 +14,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::redirect('/', '/pastes');
+Route::get('pastes', [PasteController::class, 'index'])->name('index.paste');
+Route::post('pastes', [PasteController::class, 'store'])->name('store.paste');
+Route::get('/{hash}', [PasteController::class, 'show'])->name('show.paste');
+//dibasaj@mailinator.com
+//Pa$$w0rd!
