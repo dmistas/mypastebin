@@ -1,17 +1,48 @@
-### How to install
+# MyPastebin App
 
-1. Clone from GitHub:
-    in the destination folder "git clone https://github.com/dmistas/mypastebin.git" <br>
-    or "git clone git@github.com:dmistas/mypastebin.git" <br>
-    will create folder "mypastebin"
+# Getting started
 
-2. In the folder <code>composer install</code>
-3. change configuration connection settings in file app/config/database.php with your database settings
-4. <code>npm install</code>
-5. <code>npm run dev</code>
-6. <code>php artisan migrate</code>
-7. <code>php artisan DB:seed</code> if you want mock entries
-8. Set up an entry point on your web server at "mypastebin / public / index.php"
+## Installation
 
-For more information visit the [Laravel website](https://laravel.com/docs/8.x/installation) <br>
+Please check the official laravel installation guide for server requirements before you start. [Official Documentation](https://laravel.com/docs/5.4/installation#installation)
 
+Clone the repository
+
+    git clone git@github.com:dmistas/mypastebin.git
+
+Switch to the repo folder
+
+    cd mypastebin
+
+Install all the dependencies using composer
+
+    composer install
+
+Install JS dependencies using npm
+
+    npm install
+    npm run prod
+
+Copy the example env file and make the required configuration changes in the .env file
+
+    cp .env.example .env
+
+Generate a new application key
+
+    php artisan key:generate
+
+Run the database migrations (**Set the database connection in .env before migrating**)
+
+    php artisan migrate
+
+Start the local development server
+
+    php artisan serve
+
+You can now access the server at http://localhost:8000
+
+## Database seeding
+
+Run the database seeder
+
+    php artisan db:seed
