@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
 class Paste extends Model
 {
@@ -68,5 +69,23 @@ class Paste extends Model
             default:
                 $this->attributes['expiration_time'] = null;
         }
+    }
+
+    public function scopePublicPastes($query)
+    {
+        $query->where('access', Paste::ACCESS_PUBLIC);
+    }
+
+    public function scopeActualPastes($query)
+    {
+        $query->where(function ($query) {
+            $query->where(function ($query) {
+                $query->whereDate('expiration_time', '>=', Carbon::now()->toDateString())
+                    ->whereTime('expiration_time', '>=', Carbon::now()->toTimeString());
+            })
+                ->orWhere(function ($query) {
+                    $query->where('expiration_time', '=', null);
+                });
+        });
     }
 }
